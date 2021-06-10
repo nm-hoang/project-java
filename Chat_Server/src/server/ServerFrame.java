@@ -8,7 +8,7 @@ public class ServerFrame extends javax.swing.JFrame
 {
    ArrayList clientStreams;
    ArrayList<String> clientAccounts;
-
+   ServerConnection serverConnection = new ServerConnection();
    
     public ServerFrame() 
     {
@@ -24,7 +24,6 @@ public class ServerFrame extends javax.swing.JFrame
         btnStart = new javax.swing.JButton();
         btnDisconnect = new javax.swing.JButton();
         btnShowList = new javax.swing.JButton();
-        b_clear = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat - Server's frame");
@@ -59,14 +58,6 @@ public class ServerFrame extends javax.swing.JFrame
             }
         });
 
-        b_clear.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        b_clear.setText("Clear");
-        b_clear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                b_clearActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -76,24 +67,20 @@ public class ServerFrame extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnDisconnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnStart, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnShowList, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                .addComponent(b_clear, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(73, 73, 73))
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnShowList, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnDisconnect, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(b_clear))
-                    .addComponent(btnShowList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(btnDisconnect, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 16, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(50, Short.MAX_VALUE))
@@ -116,25 +103,23 @@ public class ServerFrame extends javax.swing.JFrame
     }//GEN-LAST:event_btnDisconnectActionPerformed
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
-        Thread serverConnection = new Thread(new ServerConnection());
-        serverConnection.start();
         
+        Thread thread = new Thread(serverConnection);
+        thread.start();
         txtAreaChat.append("Server started...\n");
     }//GEN-LAST:event_btnStartActionPerformed
 
     private void btnShowListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowListActionPerformed
-        txtAreaChat.append("\n Online users : \n");
-        for (String current_user : clientAccounts)
-        {
-            txtAreaChat.append(current_user);
-            txtAreaChat.append("\n");
-        }    
-        
+//        txtAreaChat.append("\n Online users : \n");
+//        for (String current_user : clientAccounts)
+//        {
+//            txtAreaChat.append(current_user);
+//            txtAreaChat.append("\n");
+//        }    
+       ArrayList<String> clientAccounts;
+       clientAccounts = serverConnection.GetListClient();
+        System.out.println(clientAccounts.size());
     }//GEN-LAST:event_btnShowListActionPerformed
-
-    private void b_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_clearActionPerformed
-        txtAreaChat.setText("");
-    }//GEN-LAST:event_b_clearActionPerformed
 
     public static void main(String args[]) 
     {
@@ -147,22 +132,7 @@ public class ServerFrame extends javax.swing.JFrame
         });
     }
     
-    public void userAdd (String data) 
-    {
-        String message, add = ": :Connect", done = "Server: :Done", name = data;
-        txtAreaChat.append("Before " + name + " added. \n");
-        clientAccounts.add(name);
-        txtAreaChat.append("After " + name + " added. \n");
-        String[] tempList = new String[(clientAccounts.size())];
-        clientAccounts.toArray(tempList);
 
-        for (String token:tempList) 
-        {
-            message = (token + add);
-            tellEveryone(message);
-        }
-        tellEveryone(done);
-    }
     
     public void userRemove (String data) 
     {
@@ -202,7 +172,6 @@ public class ServerFrame extends javax.swing.JFrame
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton b_clear;
     private javax.swing.JButton btnDisconnect;
     private javax.swing.JButton btnShowList;
     private javax.swing.JButton btnStart;
